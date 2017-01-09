@@ -2,12 +2,12 @@
 
 """
 /***************************************************************************
- class_name
+ malstroemPlugin
                                  A QGIS plugin
  plugin_description
                               -------------------
         begin                : 2017-01-09
-        copyright            : (C) 2017 by Septima for Kortforsyningen
+        copyright            : (C) 2017 by Septima
         email                : kontakt(at)septima(dot)dk
  ***************************************************************************/
 
@@ -21,9 +21,9 @@
  ***************************************************************************/
 """
 
-__author__ = 'Septima for Kortforsyningen'
+__author__ = 'Septima'
 __date__ = '2017-01-09'
-__copyright__ = '(C) 2017 by Septima for Kortforsyningen'
+__copyright__ = '(C) 2017 by Septima'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
@@ -31,10 +31,10 @@ __revision__ = '$Format:%H$'
 
 from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
-from module_name_algorithm import class_nameAlgorithm
+from malstroem_plugin_algorithm import malstroemPluginAlgorithm
 
 
-class class_nameProvider(AlgorithmProvider):
+class malstroemPluginProvider(AlgorithmProvider):
 
     MY_DUMMY_SETTING = 'MY_DUMMY_SETTING'
 
@@ -45,7 +45,7 @@ class class_nameProvider(AlgorithmProvider):
         self.activate = False
 
         # Load algorithms
-        self.alglist = [class_nameAlgorithm()]
+        self.alglist = [malstroemPluginAlgorithm()]
         for alg in self.alglist:
             alg.provider = self
 
@@ -59,7 +59,7 @@ class class_nameProvider(AlgorithmProvider):
         """
         AlgorithmProvider.initializeSettings(self)
         ProcessingConfig.addSetting(Setting('Example algorithms',
-            class_nameProvider.MY_DUMMY_SETTING,
+            malstroemPluginProvider.MY_DUMMY_SETTING,
             'Example setting', 'Default value'))
 
     def unload(self):
@@ -68,7 +68,7 @@ class class_nameProvider(AlgorithmProvider):
         """
         AlgorithmProvider.unload(self)
         ProcessingConfig.removeSetting(
-            class_nameProvider.MY_DUMMY_SETTING)
+            malstroemPluginProvider.MY_DUMMY_SETTING)
 
     def getName(self):
         """This is the name that will appear on the toolbox group.

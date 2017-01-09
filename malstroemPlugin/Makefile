@@ -1,11 +1,11 @@
 #/***************************************************************************
-# class_name
+# malstroemPlugin
 #
 # plugin_description
 #							 -------------------
 #		begin				: 2017-01-09
 #		git sha				: $Format:%H$
-#		copyright			: (C) 2017 by Septima for Kortforsyningen
+#		copyright			: (C) 2017 by Septima
 #		email				: kontakt(at)septima(dot)dk
 # ***************************************************************************/
 #
@@ -38,13 +38,13 @@ LOCALES =
 # translation
 SOURCES = \
 	__init__.py \
-	module_name.py 
+	malstroem_plugin.py 
 
-PLUGINNAME = class_name
+PLUGINNAME = malstroemPlugin
 
 PY_FILES = \
 	__init__.py \
-	module_name.py 
+	malstroem_plugin.py 
 
 UI_FILES = 
 

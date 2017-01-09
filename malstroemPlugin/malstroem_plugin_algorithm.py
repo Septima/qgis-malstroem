@@ -2,12 +2,12 @@
 
 """
 /***************************************************************************
- class_name
+ malstroemPlugin
                                  A QGIS plugin
  plugin_description
                               -------------------
         begin                : 2017-01-09
-        copyright            : (C) 2017 by Septima for Kortforsyningen
+        copyright            : (C) 2017 by Septima
         email                : kontakt(at)septima(dot)dk
  ***************************************************************************/
 
@@ -21,9 +21,9 @@
  ***************************************************************************/
 """
 
-__author__ = 'Septima for Kortforsyningen'
+__author__ = 'Septima'
 __date__ = '2017-01-09'
-__copyright__ = '(C) 2017 by Septima for Kortforsyningen'
+__copyright__ = '(C) 2017 by Septima'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
@@ -38,7 +38,7 @@ from processing.core.outputs import OutputVector
 from processing.tools import dataobjects, vector
 
 
-class class_nameAlgorithm(GeoAlgorithm):
+class malstroemPluginAlgorithm(GeoAlgorithm):
     """This is an example algorithm that takes a vector layer and
     creates a new one just with just those features of the input
     layer that are selected.
@@ -64,7 +64,7 @@ class class_nameAlgorithm(GeoAlgorithm):
         """
 
         # The name that the user will see in the toolbox
-        self.name = 'alg_name'
+        self.name = 'Malstroem'
 
         # The branch of the toolbox under which the algorithm will appear
         self.group = 'alg_group'

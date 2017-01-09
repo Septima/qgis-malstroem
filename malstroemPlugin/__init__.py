@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-
 """
 /***************************************************************************
- class_name
+ malstroemPlugin
                                  A QGIS plugin
  plugin_description
                               -------------------
         begin                : 2017-01-09
-        copyright            : (C) 2017 by Septima for Kortforsyningen
+        copyright            : (C) 2017 by Septima
         email                : kontakt(at)septima(dot)dk
  ***************************************************************************/
 
@@ -19,36 +18,21 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+ This script initializes the plugin, making it known to QGIS.
 """
 
-__author__ = 'Septima for Kortforsyningen'
+__author__ = 'Septima'
 __date__ = '2017-01-09'
-__copyright__ = '(C) 2017 by Septima for Kortforsyningen'
-
-# This will get replaced with a git SHA1 when you do a git archive
-
-__revision__ = '$Format:%H$'
-
-import os
-import sys
-import inspect
-
-from processing.core.Processing import Processing
-from module_name_provider import class_nameProvider
-
-cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
-
-if cmd_folder not in sys.path:
-    sys.path.insert(0, cmd_folder)
+__copyright__ = '(C) 2017 by Septima'
 
 
-class class_namePlugin:
+# noinspection PyPep8Naming
+def classFactory(iface):  # pylint: disable=invalid-name
+    """Load malstroemPlugin class from file malstroemPlugin.
 
-    def __init__(self):
-        self.provider = class_nameProvider()
-
-    def initGui(self):
-        Processing.addProvider(self.provider)
-
-    def unload(self):
-        Processing.removeProvider(self.provider)
+    :param iface: A QGIS interface instance.
+    :type iface: QgsInterface
+    """
+    #
+    from .malstroem_plugin import malstroemPluginPlugin
+    return malstroemPluginPlugin()

@@ -11,10 +11,10 @@ name=Malstroem
 qgisMinimumVersion=2.0
 description=plugin_description
 version=0.1
-author=Septima for Kortforsyningen
+author=Septima
 email=kontakt(at)septima(dot)dk
 
-about=About_text
+about=This is the about text
 
 tracker=[github]
 repository=[github]

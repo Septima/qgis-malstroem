@@ -1,7 +1,7 @@
 Plugin Builder Results
 
-Your plugin class_name was created in:
-    C:\Users\kpc\.qgis2\python\plugins\Malstroem\class_name
+Your plugin malstroemPlugin was created in:
+    C:\Users\kpc\.qgis2\python\plugins\malstroem\malstroemPlugin
 
 Your QGIS plugin directory is located at:
     C:/Users/kpc/.qgis2/python/plugins
@@ -15,7 +15,7 @@ What's Next:
 
   * Test the plugin by enabling it in the QGIS plugin manager
 
-  * Customize it by editing the implementation file: ``module_name.py``
+  * Customize it by editing the implementation file: ``malstroem_plugin.py``
 
   * You can use the Makefile to compile your Ui and resource files when
     you make changes. This requires GNU make (gmake)

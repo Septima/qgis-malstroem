@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+
 """
 /***************************************************************************
- class_name
+ malstroemPlugin
                                  A QGIS plugin
  plugin_description
                               -------------------
         begin                : 2017-01-09
-        copyright            : (C) 2017 by Septima for Kortforsyningen
+        copyright            : (C) 2017 by Septima
         email                : kontakt(at)septima(dot)dk
  ***************************************************************************/
 
@@ -18,21 +19,36 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
- This script initializes the plugin, making it known to QGIS.
 """
 
-__author__ = 'Septima for Kortforsyningen'
+__author__ = 'Septima'
 __date__ = '2017-01-09'
-__copyright__ = '(C) 2017 by Septima for Kortforsyningen'
+__copyright__ = '(C) 2017 by Septima'
+
+# This will get replaced with a git SHA1 when you do a git archive
+
+__revision__ = '$Format:%H$'
+
+import os
+import sys
+import inspect
+
+from processing.core.Processing import Processing
+from malstroem_plugin_provider import malstroemPluginProvider
+
+cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
+
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 
 
-# noinspection PyPep8Naming
-def classFactory(iface):  # pylint: disable=invalid-name
-    """Load class_name class from file class_name.
+class malstroemPluginPlugin:
 
-    :param iface: A QGIS interface instance.
-    :type iface: QgsInterface
-    """
-    #
-    from .module_name import class_namePlugin
-    return class_namePlugin()
+    def __init__(self):
+        self.provider = malstroemPluginProvider()
+
+    def initGui(self):
+        Processing.addProvider(self.provider)
+
+    def unload(self):
+        Processing.removeProvider(self.provider)
