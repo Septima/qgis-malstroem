@@ -32,11 +32,9 @@ __revision__ = '$Format:%H$'
 from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 from .algorithms.complete import Complete
+from malstroem_utils import MalstroemUtils
 
 class malstroemAlgorithmProvider(AlgorithmProvider):
-
-    MY_DUMMY_SETTING = 'MY_DUMMY_SETTING'
-    MALSTROEM_FOLDER = 'MALSTROEM_FOLDER' 
 
     def __init__(self):
         AlgorithmProvider.__init__(self)
@@ -59,7 +57,7 @@ class malstroemAlgorithmProvider(AlgorithmProvider):
         """
         AlgorithmProvider.initializeSettings(self)
         ProcessingConfig.addSetting(Setting(self.getDescription(),
-            malstroemPluginProvider.MALSTROEM_FOLDER,
+            MalstroemUtils.MALSTROEM_FOLDER,
             'Malstroem folder', '', valuetype=Setting.FOLDER))
 
     def unload(self):

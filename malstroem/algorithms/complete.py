@@ -40,45 +40,33 @@ from processing.core.parameters import ParameterString
 from processing.core.parameters import ParameterRaster
 from processing.core.outputs import OutputVector
 from processing.tools import dataobjects, vector
+from ..malstroem_utils import MalstroemUtils
 
 
 class Complete(GeoAlgorithm):
-    """This is an example algorithm that takes a vector layer and
-    creates a new one just with just those features of the input
-    layer that are selected.
-
-    It is meant to be used as an example of how to create your own
-    algorithms and explain methods and variables used to do it. An
-    algorithm like this will be available in all elements, and there
-    is not need for additional work.
-
-    All Processing algorithms should extend the GeoAlgorithm class.
-    """
-
     # Constants used to refer to parameters and outputs. They will be
     # used when calling the algorithm from another algorithm, or when
     # calling from the QGIS console.
 
     OUTPUT_LAYER = 'OUTPUT_LAYER'
-    INPUT_DEM = 'INPUT_DEM'
+    INPUT_LAYER = 'INPUT_LAYER'
     RAIN_MM = 'RAIN_MM'
     ACCUMULATE = 'ACCUMULATE'
     VECTOR = 'VECTOR'
     FILTER = 'FILTER'
 
     def defineCharacteristics(self):
-
         # The name that the user will see in the toolbox
         self.name = self.tr('Complete (Perform all steps in one complete analysis)')
 
         # The branch of the toolbox under which the algorithm will appear
         self.group = self.tr('Short cut')
 
-        self.addParameter(ParameterRaster(self.INPUT_DEM,
+        self.addParameter(ParameterRaster(self.INPUT_LAYER,
             self.tr('Input DEM (Raster)'), False, False))
 
-        self.addOutput(OutputVector(self.OUTPUT_LAYER,
-            self.tr('Output layer with selected features')))
+#        self.addOutput(OutputVector(self.OUTPUT_LAYER,
+#            self.tr('Output layer with selected features')))
 
         self.addParameter(ParameterNumber(
             self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 0))
@@ -95,8 +83,10 @@ class Complete(GeoAlgorithm):
     def processAlgorithm(self, progress):
         commands = ['complete']
         #-dem C:\Users\kpc\git\malstroem\tests\data\dtm.tif -r 10 -outdir c:\temp\kpc
-        commends.extend(['-dem', self.INPUT_DEM])
-        commends.extend(['', ''])
-        commends.extend(['', ''])
+        inputFilename = self.getParameterValue(self.INPUT_LAYER)
+        commands.extend(['-dem', inputFilename])
+        rainMM = self.getParameterValue(self.RAIN_MM)
+        commands.extend(['-r', str(rainMM)])
         outDir = MalstroemUtils.getTempDir('complete')
-        MalstroemUtils.runFusion(commands, progress)
+        commands.extend(['-outdir', outDir])
+        MalstroemUtils.runMalstroem(commands, progress)
