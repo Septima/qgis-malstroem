@@ -34,7 +34,7 @@ import sys
 import inspect
 
 from processing.core.Processing import Processing
-from malstroem_plugin_provider import malstroemPluginProvider
+from malstroem_algorithm_provider import malstroemAlgorithmProvider
 
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
@@ -45,7 +45,7 @@ if cmd_folder not in sys.path:
 class malstroemPlugin:
 
     def __init__(self):
-        self.provider = malstroemPluginProvider()
+        self.provider = malstroemAlgorithmProvider()
 
     def initGui(self):
         Processing.addProvider(self.provider)

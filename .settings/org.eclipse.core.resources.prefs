@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
 encoding//malstroem/__init__.py=utf-8
+encoding//malstroem/algorithms/complete.py=utf-8
+encoding//malstroem/malstroem_algorithm_provider.py=utf-8
 encoding//malstroem/malstroem_plugin.py=utf-8
-encoding//malstroem/malstroem_plugin_algorithm.py=utf-8
-encoding//malstroem/malstroem_plugin_provider.py=utf-8

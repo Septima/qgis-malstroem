@@ -31,10 +31,9 @@ __revision__ = '$Format:%H$'
 
 from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
-from malstroem_plugin_algorithm import malstroemPluginAlgorithm
+from .algorithms.complete import Complete
 
-
-class malstroemPluginProvider(AlgorithmProvider):
+class malstroemAlgorithmProvider(AlgorithmProvider):
 
     MY_DUMMY_SETTING = 'MY_DUMMY_SETTING'
     MALSTROEM_FOLDER = 'MALSTROEM_FOLDER' 
@@ -46,7 +45,7 @@ class malstroemPluginProvider(AlgorithmProvider):
         self.activate = False
 
         # Load algorithms
-        self.alglist = [malstroemPluginAlgorithm()]
+        self.alglist = [Complete()]
         for alg in self.alglist:
             alg.provider = self
 
