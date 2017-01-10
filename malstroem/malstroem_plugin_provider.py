@@ -37,6 +37,7 @@ from malstroem_plugin_algorithm import malstroemPluginAlgorithm
 class malstroemPluginProvider(AlgorithmProvider):
 
     MY_DUMMY_SETTING = 'MY_DUMMY_SETTING'
+    MALSTROEM_FOLDER = 'MALSTROEM_FOLDER' 
 
     def __init__(self):
         AlgorithmProvider.__init__(self)
@@ -58,9 +59,9 @@ class malstroemPluginProvider(AlgorithmProvider):
         deactivating the algorithms in the provider.
         """
         AlgorithmProvider.initializeSettings(self)
-        ProcessingConfig.addSetting(Setting('Example algorithms',
-            malstroemPluginProvider.MY_DUMMY_SETTING,
-            'Example setting', 'Default value'))
+        ProcessingConfig.addSetting(Setting(self.getDescription(),
+            malstroemPluginProvider.MALSTROEM_FOLDER,
+            'Malstroem folder', '', valuetype=Setting.FOLDER))
 
     def unload(self):
         """Setting should be removed here, so they do not appear anymore
@@ -79,9 +80,7 @@ class malstroemPluginProvider(AlgorithmProvider):
         return 'provider_name'
 
     def getDescription(self):
-        """This is the provired full name.
-        """
-        return 'provider_description'
+        return 'Malstroem'
 
     def getIcon(self):
         """We return the default icon.

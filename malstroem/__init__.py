@@ -28,11 +28,5 @@ __copyright__ = '(C) 2017 by Septima'
 
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
-    """Load malstroemPlugin class from file malstroemPlugin.
-
-    :param iface: A QGIS interface instance.
-    :type iface: QgsInterface
-    """
-    #
-    from .malstroem_plugin import malstroemPluginPlugin
-    return malstroemPluginPlugin()
+    from .malstroem_plugin import malstroemPlugin
+    return malstroemPlugin()

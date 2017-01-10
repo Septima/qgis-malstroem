@@ -9,15 +9,15 @@
 [general]
 name=Malstroem
 qgisMinimumVersion=2.0
-description=plugin_description
+description=plugin description
 version=0.1
 author=Septima
-email=kontakt(at)septima(dot)dk
+email=kontakt@septima.dk
 
 about=This is the about text
 
-tracker=[github]
-repository=[github]
+tracker=github
+repository=github
 # End of mandatory metadata
 
 # Recommended items:

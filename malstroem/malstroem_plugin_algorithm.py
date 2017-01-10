@@ -34,6 +34,9 @@ from qgis.core import QgsVectorFileWriter
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.core.parameters import ParameterVector
+from processing.core.parameters import ParameterBoolean
+from processing.core.parameters import ParameterNumber
+from processing.core.parameters import ParameterString
 from processing.core.outputs import OutputVector
 from processing.tools import dataobjects, vector
 
@@ -57,6 +60,10 @@ class malstroemPluginAlgorithm(GeoAlgorithm):
 
     OUTPUT_LAYER = 'OUTPUT_LAYER'
     INPUT_LAYER = 'INPUT_LAYER'
+    RAIN_MM = 'RAIN_MM'
+    ACCUMULATE = 'ACCUMULATE'
+    VECTOR = 'VECTOR'
+    FILTER = 'FILTER'
 
     def defineCharacteristics(self):
         """Here we define the inputs and output of the algorithm, along
@@ -78,6 +85,18 @@ class malstroemPluginAlgorithm(GeoAlgorithm):
         self.addOutput(OutputVector(self.OUTPUT_LAYER,
             self.tr('Output layer with selected features')))
 
+        self.addParameter(ParameterNumber(
+            self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 0))
+
+        self.addParameter(ParameterBoolean(self.ACCUMULATE,
+            self.tr("Calculate accumulated flow"), False))
+
+        self.addParameter(ParameterBoolean(self.VECTOR,
+            self.tr("Vectorize bluespots and watersheds"), False))
+        
+        self.addParameter(ParameterString(self.FILTER,
+            self.tr("Filter bluespots by area, maximum depth and volume. E.g.: 'area > 20.5 and (maxdepth > 0.05 or volume >  2.5)'"), False))
+        
     def processAlgorithm(self, progress):
         """Here is where the processing itself takes place."""
 
