@@ -4,3 +4,4 @@ encoding//malstroem/algorithms/__init__.py=utf-8
 encoding//malstroem/algorithms/complete.py=utf-8
 encoding//malstroem/malstroem_algorithm_provider.py=utf-8
 encoding//malstroem/malstroem_plugin.py=utf-8
+encoding//malstroem/malstroem_utils.py=utf-8

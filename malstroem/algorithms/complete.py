@@ -29,6 +29,8 @@ __copyright__ = '(C) 2017 by Septima'
 
 __revision__ = '$Format:%H$'
 
+import os
+
 from PyQt4.QtCore import QSettings
 from qgis.core import QgsVectorFileWriter
 
@@ -38,8 +40,9 @@ from processing.core.parameters import ParameterBoolean
 from processing.core.parameters import ParameterNumber
 from processing.core.parameters import ParameterString
 from processing.core.parameters import ParameterRaster
-from processing.core.outputs import OutputVector
+from processing.core.outputs import OutputVector, OutputRaster
 from processing.tools import dataobjects, vector
+
 from ..malstroem_utils import MalstroemUtils
 
 
@@ -48,7 +51,8 @@ class Complete(GeoAlgorithm):
     # used when calling the algorithm from another algorithm, or when
     # calling from the QGIS console.
 
-    OUTPUT_LAYER = 'OUTPUT_LAYER'
+    OUTPUT_FILL_RASTER = 'fill'
+    OUTPUT_STREAMS_LAYER = 'streams'
     INPUT_LAYER = 'INPUT_LAYER'
     RAIN_MM = 'RAIN_MM'
     ACCUMULATE = 'ACCUMULATE'
@@ -65,11 +69,14 @@ class Complete(GeoAlgorithm):
         self.addParameter(ParameterRaster(self.INPUT_LAYER,
             self.tr('Input DEM (Raster)'), False, False))
 
-#        self.addOutput(OutputVector(self.OUTPUT_LAYER,
-#            self.tr('Output layer with selected features')))
+#        self.addOutput(OutputRaster(self.OUTPUT_FILL_RASTER,
+#            self.tr('Output raster with fill')))
+
+        self.addOutput(OutputVector(self.OUTPUT_STREAMS_LAYER,
+            self.tr('Output layer with streams')))
 
         self.addParameter(ParameterNumber(
-            self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 0))
+            self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 10))
 
         self.addParameter(ParameterBoolean(self.ACCUMULATE,
             self.tr("Calculate accumulated flow"), False))
@@ -87,6 +94,27 @@ class Complete(GeoAlgorithm):
         commands.extend(['-dem', inputFilename])
         rainMM = self.getParameterValue(self.RAIN_MM)
         commands.extend(['-r', str(rainMM)])
-        outDir = MalstroemUtils.getTempDir('complete')
+        outDir = MalstroemUtils.getOutputDir('complete')
         commands.extend(['-outdir', outDir])
         MalstroemUtils.runMalstroem(commands, progress)
+        
+        #Do output
+        settings = QSettings()
+        systemEncoding = settings.value('/UI/encoding', 'System')
+        
+        #Streams
+        streams_output = self.getOutputValue(self.OUTPUT_STREAMS_LAYER)
+        streams_layer = dataobjects.getObjectFromUri(os.path.join(outDir, 'streams.shp'))
+        streams_provider = streams_layer.dataProvider()
+        
+        streams_writer = QgsVectorFileWriter(streams_output, systemEncoding,
+                                     streams_provider.fields(),
+                                     streams_provider.geometryType(), streams_provider.crs())
+        
+        streams_features = vector.features(streams_layer)
+        for f in streams_features:
+            streams_writer.addFeature(f)
+
+
+        
+        
