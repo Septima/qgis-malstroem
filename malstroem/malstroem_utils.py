@@ -15,6 +15,7 @@ from processing.core.ProcessingLog import ProcessingLog
 from processing.core.ProcessingConfig import ProcessingConfig
 from processing.tools import system
 from processing.tools import dataobjects, vector
+from processing.tools.raster import RasterWriter
 
 class MalstroemUtils:
     
@@ -106,12 +107,10 @@ class MalstroemUtils:
         input_dataobject = dataobjects.getObjectFromUri(os.path.join(raster_dir, input_filename))
         input_provider = input_dataobject.dataProvider()
 
-        output = self.getOutputFromName(output_filename)
-
         cellsize = (input_dataobject.extent().xMaximum() - input_dataobject.extent().xMinimum()) \
             / input_dataobject.width()
 
-        w = RasterWriter(output.getCompatibleFileName(self),
+        w = RasterWriter(output_filename,
                          input_dataobject.extent().xMinimum(),
                          input_dataobject.extent().yMinimum(),
                          input_dataobject.extent().xMaximum(),
@@ -121,7 +120,7 @@ class MalstroemUtils:
                          input_provider.crs(),
                          )
         #Get data
-        inDs = gdal.Open(input_filename)
+        inDs = gdal.Open(os.path.join(raster_dir, input_filename))
         band1 = inDs.GetRasterBand(1)
         rows = inDs.RasterYSize
         cols = inDs.RasterXSize

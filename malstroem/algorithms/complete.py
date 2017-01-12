@@ -124,8 +124,9 @@ class Complete(GeoAlgorithm):
                 'pourpoints.shp',
                 self.getOutputValue(self.OUTPUT_POURPOINTS_LAYER))
             
+            output = self.getOutputFromName(self.OUTPUT_FILLED_RASTER)
             MalstroemUtils.writeRasterOutput(
                 malstroem_outdir,
                 'filled.tif',
-                self.getOutputValue(self.OUTPUT_FILLED_RASTER))
+                output.getCompatibleFileName(self))
 
