@@ -101,32 +101,25 @@ class Complete(GeoAlgorithm):
         command_args.extend(['-r', str(rainMM)])
         malstroem_outdir = MalstroemUtils.getOutputDir()
         command_args.extend(['-outdir', malstroem_outdir])
-        MalstroemUtils.runMalstroemCommand(command, command_args, progress)
-        
-        #Create processing output from malstroem output
-        MalstroemUtils.writeVectorOutput(
-            malstroem_outdir,
-            'events.shp',
-            self.getOutputValue(self.OUTPUT_EVENTS_LAYER))
-
-        MalstroemUtils.writeVectorOutput(
-            malstroem_outdir,
-            'streams.shp',
-            self.getOutputValue(self.OUTPUT_STREAMS_LAYER))
-
-        MalstroemUtils.writeVectorOutput(
-            malstroem_outdir,
-            'nodes.shp',
-            self.getOutputValue(self.OUTPUT_NODES_LAYER))
-
-        MalstroemUtils.writeVectorOutput(
-            malstroem_outdir,
-            'pourpoints.shp',
-            self.getOutputValue(self.OUTPUT_POURPOINTS_LAYER))
-        
-        
-
-
-
-        
-        
+        success = MalstroemUtils.runMalstroemCommand(command, command_args, progress)
+        if success:
+            #Create processing output from malstroem output
+            MalstroemUtils.writeVectorOutput(
+                malstroem_outdir,
+                'events.shp',
+                self.getOutputValue(self.OUTPUT_EVENTS_LAYER))
+    
+            MalstroemUtils.writeVectorOutput(
+                malstroem_outdir,
+                'streams.shp',
+                self.getOutputValue(self.OUTPUT_STREAMS_LAYER))
+    
+            MalstroemUtils.writeVectorOutput(
+                malstroem_outdir,
+                'nodes.shp',
+                self.getOutputValue(self.OUTPUT_NODES_LAYER))
+    
+            MalstroemUtils.writeVectorOutput(
+                malstroem_outdir,
+                'pourpoints.shp',
+                self.getOutputValue(self.OUTPUT_POURPOINTS_LAYER))
