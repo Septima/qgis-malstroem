@@ -97,3 +97,18 @@ class MalstroemUtils:
 
         for feature in vector.features(input_dataobject):
             writer.addFeature(feature)
+            
+    @staticmethod
+    def writeRasterOutput(malstroem_outdir, input_filename, output_filename):
+        raster_dir = malstroem_outdir
+        input_dataobject = dataobjects.getObjectFromUri(os.path.join(raster_dir, input_filename))
+        input_provider = input_dataobject.dataProvider()
+        writer = QgsRasterFileWriter(
+            output_filename,
+            MalstroemUtils.getSystemEncoding(),
+            input_provider.fields(),
+            input_provider.geometryType(),
+            input_provider.crs())
+
+        for feature in vector.features(input_dataobject):
+            writer.addFeature(feature)
