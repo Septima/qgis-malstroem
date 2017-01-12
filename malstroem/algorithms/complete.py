@@ -31,9 +31,6 @@ __revision__ = '$Format:%H$'
 
 import os
 
-from PyQt4.QtCore import QSettings
-from qgis.core import QgsVectorFileWriter
-
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.core.parameters import ParameterVector
 from processing.core.parameters import ParameterBoolean
@@ -41,17 +38,14 @@ from processing.core.parameters import ParameterNumber
 from processing.core.parameters import ParameterString
 from processing.core.parameters import ParameterRaster
 from processing.core.outputs import OutputVector, OutputRaster
-from processing.tools import dataobjects, vector
 
 from ..malstroem_utils import MalstroemUtils
 
-
 class Complete(GeoAlgorithm):
-    # Constants used to refer to parameters and outputs. They will be
-    # used when calling the algorithm from another algorithm, or when
-    # calling from the QGIS console.
-
     OUTPUT_FILL_RASTER = 'fill'
+    OUTPUT_EVENTS_LAYER = 'events'
+    OUTPUT_NODES_LAYER = 'nodes'
+    OUTPUT_POURPOINTS_LAYER = 'pourpoints'
     OUTPUT_STREAMS_LAYER = 'streams'
     INPUT_LAYER = 'INPUT_LAYER'
     RAIN_MM = 'RAIN_MM'
@@ -72,9 +66,18 @@ class Complete(GeoAlgorithm):
 #        self.addOutput(OutputRaster(self.OUTPUT_FILL_RASTER,
 #            self.tr('Output raster with fill')))
 
-        self.addOutput(OutputVector(self.OUTPUT_STREAMS_LAYER,
-            self.tr('Output layer with streams')))
+        self.addOutput(OutputVector(self.OUTPUT_EVENTS_LAYER,
+            self.tr('Events')))
 
+        self.addOutput(OutputVector(self.OUTPUT_NODES_LAYER,
+            self.tr('Nodes')))
+
+        self.addOutput(OutputVector(self.OUTPUT_POURPOINTS_LAYER,
+            self.tr('Pourpoints')))
+        
+        self.addOutput(OutputVector(self.OUTPUT_STREAMS_LAYER,
+            self.tr('Streams')))
+        
         self.addParameter(ParameterNumber(
             self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 10))
 
@@ -88,32 +91,41 @@ class Complete(GeoAlgorithm):
             self.tr("Filter bluespots by area, maximum depth and volume. E.g.: 'area > 20.5 and (maxdepth > 0.05 or volume >  2.5)'"), False))
         
     def processAlgorithm(self, progress):
-        commands = ['complete']
-        #-dem C:\Users\kpc\git\malstroem\tests\data\dtm.tif -r 10 -outdir c:\temp\kpc
+        #Prepare call to malstroem
+        #Example: complete -dem C:\Users\kpc\git\malstroem\tests\data\dtm.tif -r 10 -outdir c:\temp\kpc
+        command = 'complete'
+        command_args = []
         inputFilename = self.getParameterValue(self.INPUT_LAYER)
-        commands.extend(['-dem', inputFilename])
+        command_args.extend(['-dem', inputFilename])
         rainMM = self.getParameterValue(self.RAIN_MM)
-        commands.extend(['-r', str(rainMM)])
-        outDir = MalstroemUtils.getOutputDir('complete')
-        commands.extend(['-outdir', outDir])
-        MalstroemUtils.runMalstroem(commands, progress)
+        command_args.extend(['-r', str(rainMM)])
+        malstroem_outdir = MalstroemUtils.getOutputDir()
+        command_args.extend(['-outdir', malstroem_outdir])
+        MalstroemUtils.runMalstroemCommand(command, command_args, progress)
         
-        #Do output
-        settings = QSettings()
-        systemEncoding = settings.value('/UI/encoding', 'System')
+        #Create processing output from malstroem output
+        MalstroemUtils.writeVectorOutput(
+            malstroem_outdir,
+            'events.shp',
+            self.getOutputValue(self.OUTPUT_EVENTS_LAYER))
+
+        MalstroemUtils.writeVectorOutput(
+            malstroem_outdir,
+            'streams.shp',
+            self.getOutputValue(self.OUTPUT_STREAMS_LAYER))
+
+        MalstroemUtils.writeVectorOutput(
+            malstroem_outdir,
+            'nodes.shp',
+            self.getOutputValue(self.OUTPUT_NODES_LAYER))
+
+        MalstroemUtils.writeVectorOutput(
+            malstroem_outdir,
+            'pourpoints.shp',
+            self.getOutputValue(self.OUTPUT_POURPOINTS_LAYER))
         
-        #Streams
-        streams_output = self.getOutputValue(self.OUTPUT_STREAMS_LAYER)
-        streams_layer = dataobjects.getObjectFromUri(os.path.join(outDir, 'streams.shp'))
-        streams_provider = streams_layer.dataProvider()
         
-        streams_writer = QgsVectorFileWriter(streams_output, systemEncoding,
-                                     streams_provider.fields(),
-                                     streams_provider.geometryType(), streams_provider.crs())
-        
-        streams_features = vector.features(streams_layer)
-        for f in streams_features:
-            streams_writer.addFeature(f)
+
 
 
         
