@@ -42,7 +42,7 @@ from processing.core.outputs import OutputVector, OutputRaster
 from ..malstroem_utils import MalstroemUtils
 
 class Complete(GeoAlgorithm):
-    OUTPUT_FILL_RASTER = 'fill'
+    OUTPUT_FILLED_RASTER = 'filled'
     OUTPUT_EVENTS_LAYER = 'events'
     OUTPUT_NODES_LAYER = 'nodes'
     OUTPUT_POURPOINTS_LAYER = 'pourpoints'
@@ -63,8 +63,8 @@ class Complete(GeoAlgorithm):
         self.addParameter(ParameterRaster(self.INPUT_LAYER,
             self.tr('Input DEM (Raster)'), False, False))
 
-#        self.addOutput(OutputRaster(self.OUTPUT_FILL_RASTER,
-#            self.tr('Output raster with fill')))
+        self.addOutput(OutputRaster(self.OUTPUT_FILLED_RASTER,
+            self.tr('Output raster with fill')))
 
         self.addOutput(OutputVector(self.OUTPUT_EVENTS_LAYER,
             self.tr('Events')))
@@ -123,3 +123,9 @@ class Complete(GeoAlgorithm):
                 malstroem_outdir,
                 'pourpoints.shp',
                 self.getOutputValue(self.OUTPUT_POURPOINTS_LAYER))
+            
+            MalstroemUtils.writeRasterOutput(
+                malstroem_outdir,
+                'filled.tif',
+                self.getOutputValue(self.OUTPUT_FILLED_RASTER))
+

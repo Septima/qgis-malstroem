@@ -9,6 +9,8 @@ from PyQt4.QtCore import QDir
 
 from qgis.core import QgsVectorFileWriter
 
+from osgeo import gdal
+
 from processing.core.ProcessingLog import ProcessingLog
 from processing.core.ProcessingConfig import ProcessingConfig
 from processing.tools import system
@@ -103,12 +105,26 @@ class MalstroemUtils:
         raster_dir = malstroem_outdir
         input_dataobject = dataobjects.getObjectFromUri(os.path.join(raster_dir, input_filename))
         input_provider = input_dataobject.dataProvider()
-        writer = QgsRasterFileWriter(
-            output_filename,
-            MalstroemUtils.getSystemEncoding(),
-            input_provider.fields(),
-            input_provider.geometryType(),
-            input_provider.crs())
 
-        for feature in vector.features(input_dataobject):
-            writer.addFeature(feature)
+        output = self.getOutputFromName(output_filename)
+
+        cellsize = (input_dataobject.extent().xMaximum() - input_dataobject.extent().xMinimum()) \
+            / input_dataobject.width()
+
+        w = RasterWriter(output.getCompatibleFileName(self),
+                         input_dataobject.extent().xMinimum(),
+                         input_dataobject.extent().yMinimum(),
+                         input_dataobject.extent().xMaximum(),
+                         input_dataobject.extent().yMaximum(),
+                         cellsize,
+                         1,
+                         input_provider.crs(),
+                         )
+        #Get data
+        inDs = gdal.Open(input_filename)
+        band1 = inDs.GetRasterBand(1)
+        rows = inDs.RasterYSize
+        cols = inDs.RasterXSize
+        data = band1.ReadAsArray(0,0,cols,rows)
+        w.matrix= data
+        w.close()
