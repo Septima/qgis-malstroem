@@ -42,11 +42,15 @@ from processing.core.outputs import OutputVector, OutputRaster
 from ..malstroem_utils import MalstroemUtils
 
 class Complete(GeoAlgorithm):
-    OUTPUT_FILLED_RASTER = 'filled'
     OUTPUT_EVENTS_LAYER = 'events'
     OUTPUT_NODES_LAYER = 'nodes'
     OUTPUT_POURPOINTS_LAYER = 'pourpoints'
     OUTPUT_STREAMS_LAYER = 'streams'
+    OUTPUT_DEPTHS_RASTER = 'depths'
+    OUTPUT_FILLED_RASTER = 'filled'
+    OUTPUT_FLOWDIR_RASTER = 'flowdir'
+    OUTPUT_LABELLED_RASTER = 'labelled'
+    OUTPUT_WATERSHEDS_RASTER = 'watersheds'
     INPUT_LAYER = 'INPUT_LAYER'
     RAIN_MM = 'RAIN_MM'
     ACCUMULATE = 'ACCUMULATE'
@@ -63,9 +67,6 @@ class Complete(GeoAlgorithm):
         self.addParameter(ParameterRaster(self.INPUT_LAYER,
             self.tr('Input DEM (Raster)'), False, False))
 
-        self.addOutput(OutputRaster(self.OUTPUT_FILLED_RASTER,
-            self.tr('Output raster with fill')))
-
         self.addOutput(OutputVector(self.OUTPUT_EVENTS_LAYER,
             self.tr('Events')))
 
@@ -77,7 +78,10 @@ class Complete(GeoAlgorithm):
         
         self.addOutput(OutputVector(self.OUTPUT_STREAMS_LAYER,
             self.tr('Streams')))
-        
+
+        self.addOutput(OutputRaster(self.OUTPUT_FILLED_RASTER,
+            self.tr('Filled')))
+
         self.addParameter(ParameterNumber(
             self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 10))
 
@@ -104,6 +108,8 @@ class Complete(GeoAlgorithm):
         success = MalstroemUtils.runMalstroemCommand(command, command_args, progress)
         if success:
             #Create processing output from malstroem output
+            
+            #Create vector files
             MalstroemUtils.writeVectorOutput(
                 malstroem_outdir,
                 'events.shp',
@@ -123,10 +129,14 @@ class Complete(GeoAlgorithm):
                 malstroem_outdir,
                 'pourpoints.shp',
                 self.getOutputValue(self.OUTPUT_POURPOINTS_LAYER))
+
+            #Create raster files by copying malstroem output
+            MalstroemUtils.copyRasterToOutput(malstroem_outdir, 'filled.tif', self.getOutputFromName(self.OUTPUT_FILLED_RASTER))
             
-            output = self.getOutputFromName(self.OUTPUT_FILLED_RASTER)
-            MalstroemUtils.writeRasterOutput(
-                malstroem_outdir,
-                'filled.tif',
-                output.getCompatibleFileName(self))
+            #Under construction: convert to correct raster type based on extension of self.OUTPUT_xxx_RASTER 
+#            output = self.getOutputFromName(self.OUTPUT_FILLED_RASTER)
+#            MalstroemUtils.writeRasterOutput(
+#                malstroem_outdir,
+#                'filled.tif',
+#                output.getCompatibleFileName(self))
 

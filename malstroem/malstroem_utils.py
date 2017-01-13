@@ -10,6 +10,7 @@ from PyQt4.QtCore import QDir
 from qgis.core import QgsVectorFileWriter
 
 from osgeo import gdal
+from shutil import copyfile
 
 from processing.core.ProcessingLog import ProcessingLog
 from processing.core.ProcessingConfig import ProcessingConfig
@@ -124,6 +125,20 @@ class MalstroemUtils:
         band1 = inDs.GetRasterBand(1)
         rows = inDs.RasterYSize
         cols = inDs.RasterXSize
-        data = band1.ReadAsArray(0,0,cols,rows)
+        data = band1.ReadAsArray()
         w.matrix= data
         w.close()
+
+    @staticmethod
+    def copyRasterToOutput(malstroem_outdir, input_filename, output):
+        raster_dir = malstroem_outdir
+        input_full_filename = os.path.join(raster_dir, input_filename)
+        
+        output_filename = output.value
+        if not output_filename.endswith('.tif'):
+            output_filename += '.tif'
+            output.value = output_filename
+            
+        copyfile(input_full_filename, output_filename)
+
+        
