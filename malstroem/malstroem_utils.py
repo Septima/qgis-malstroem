@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
 import subprocess
-import shutil
+
+from shutil import copyfile
+import numpy as np
+
+from osgeo import gdal, osr
+import gdal
+from gdalconst import *
 
 from PyQt4.QtCore import QCoreApplication
 from PyQt4.QtCore import QSettings
@@ -9,14 +15,13 @@ from PyQt4.QtCore import QDir
 
 from qgis.core import QgsVectorFileWriter
 
-from osgeo import gdal
-from shutil import copyfile
-
 from processing.core.ProcessingLog import ProcessingLog
 from processing.core.ProcessingConfig import ProcessingConfig
 from processing.tools import system
 from processing.tools import dataobjects, vector
 from processing.tools.raster import RasterWriter
+
+from processing.algs.gdal.GdalUtils import GdalUtils
 
 class MalstroemUtils:
     
@@ -125,17 +130,12 @@ class MalstroemUtils:
         return unicode(os.path.abspath(outputDir))
     
     @staticmethod
-    def deleteTempDir(algorithm):
-        shutil.rmtree(dir)
-    
-    @staticmethod
     def MalstroemExePath():
         folder = ProcessingConfig.getSetting(MalstroemUtils.MALSTROEM_FOLDER)
         if folder is None:
             folder = ''
         return folder
     
-                
     @staticmethod
     def writeVectorOutput(malstroem_outdir, input_filename, output, format_idx):
         vector_dir = os.path.join(malstroem_outdir, 'vector')
@@ -143,8 +143,8 @@ class MalstroemUtils:
         input_provider = input_dataobject.dataProvider()
         
         output_filename = output.value
-        out_format = VECTOR_FORMATS[format_idx]
-        ext = EXTS[format_idx]
+        out_format = MalstroemUtils.VECTOR_FORMATS[format_idx]
+        ext = MalstroemUtils.VECTOR_EXTS[format_idx]
         if not output_filename.endswith(ext):
             output_filename += ext
             output.value = output_filename
@@ -159,44 +159,70 @@ class MalstroemUtils:
 
         for feature in vector.features(input_dataobject):
             writer.addFeature(feature)
+
+    @staticmethod
+    def writeRasterOutput(malstroem_out_dir, malstroem_out_filename, output_filename):
+        if os.path.basename(output_filename) == malstroem_out_filename:
+            #if file names are equal just copy
+            MalstroemUtils.copyRasterToOutput(malstroem_out_dir, malstroem_out_filename, output_filename)
+        else:
+            #Convert
+            malstroem_out_raster_dir = malstroem_out_dir
+            FileName = os.path.join(malstroem_out_raster_dir, malstroem_out_filename)
+            DataSet = gdal.Open(FileName, GA_ReadOnly)
+            # Get the first (and only) band.
+            Band = DataSet.GetRasterBand(1)
+            # Open as an array.
+            Array = Band.ReadAsArray()
+            # Get the No Data Value
+            NDV = Band.GetNoDataValue()
+            # Convert No Data Points to nans
+            Array[Array == NDV] = np.nan
             
-    @staticmethod
-    def writeRasterOutput(malstroem_outdir, input_filename, output_filename):
-        raster_dir = malstroem_outdir
-        input_dataobject = dataobjects.getObjectFromUri(os.path.join(raster_dir, input_filename))
-        input_provider = input_dataobject.dataProvider()
-
-        cellsize = (input_dataobject.extent().xMaximum() - input_dataobject.extent().xMinimum()) \
-            / input_dataobject.width()
-
-        w = RasterWriter(output_filename,
-                         input_dataobject.extent().xMinimum(),
-                         input_dataobject.extent().yMinimum(),
-                         input_dataobject.extent().xMaximum(),
-                         input_dataobject.extent().yMaximum(),
-                         cellsize,
-                         1,
-                         input_provider.crs(),
-                         )
-        #Get data
-        inDs = gdal.Open(os.path.join(raster_dir, input_filename))
-        band1 = inDs.GetRasterBand(1)
-        rows = inDs.RasterYSize
-        cols = inDs.RasterXSize
-        data = band1.ReadAsArray()
-        w.matrix= data
-        w.close()
+            # Now I'm ready to save the new file, in the meantime I have 
+            # closed the original, so I reopen it to get the projection
+            # information...
+            NDV, xsize, ysize, GeoT, Projection, DataType = MalstroemUtils.GetRasterInfo(FileName)
+            
+            # Set up the correct output driver
+            driver_name = GdalUtils.getFormatShortNameFromFilename(output_filename)
+            driver = gdal.GetDriverByName(driver_name)
+            
+            MalstroemUtils.CreateRasterFile(output_filename, Array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
 
     @staticmethod
-    def copyRasterToOutput(malstroem_outdir, input_filename, output):
-        raster_dir = malstroem_outdir
-        input_full_filename = os.path.join(raster_dir, input_filename)
+    def copyRasterToOutput(malstroem_out_dir, malstroem_out_filename, output_filename):
+        malstroem_out_raster_dir = malstroem_out_dir
+        input_full_filename = os.path.join(malstroem_out_raster_dir, malstroem_out_filename)
         
-        output_filename = output.value
-        if not output_filename.endswith('.tif'):
-            output_filename += '.tif'
-            output.value = output_filename
-            
         copyfile(input_full_filename, output_filename)
 
+    @staticmethod
+    def GetRasterInfo(rasterFileName):
+        SourceDS = gdal.Open(rasterFileName, GA_ReadOnly)
+        NDV = SourceDS.GetRasterBand(1).GetNoDataValue()
+        xsize = SourceDS.RasterXSize
+        ysize = SourceDS.RasterYSize
+        GeoT = SourceDS.GetGeoTransform()
+        Projection = osr.SpatialReference()
+        Projection.ImportFromWkt(SourceDS.GetProjectionRef())
+        DataType = SourceDS.GetRasterBand(1).DataType
+        DataType = gdal.GetDataTypeName(DataType)
+        return NDV, xsize, ysize, GeoT, Projection, DataType
         
+    @staticmethod
+    def CreateRasterFile(NewFileName, Array, driver, NDV, xsize, ysize, GeoT, Projection, DataType):
+        if DataType == 'Float32':
+            DataType = gdal.GDT_Float32
+        # Set nans to the original No Data Value
+        Array[np.isnan(Array)] = NDV
+        # Set up the dataset
+        DataSet = driver.Create( NewFileName, xsize, ysize, 1, DataType )
+                # the '1' is for band 1.
+        DataSet.SetGeoTransform(GeoT)
+        DataSet.SetProjection( Projection.ExportToWkt() )
+        # Write the array
+        DataSet.GetRasterBand(1).WriteArray( Array )
+        DataSet.GetRasterBand(1).SetNoDataValue(NDV)
+        return NewFileName
+    

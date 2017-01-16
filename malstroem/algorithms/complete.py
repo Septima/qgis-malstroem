@@ -140,8 +140,11 @@ class Complete(GeoAlgorithm):
                 self.getOutputFromName(self.OUTPUT_POURPOINTS_LAYER),
                 self.getParameterValue(self.VECTOR_FORMAT))
 
-            #Create raster files by copying malstroem output
-            MalstroemUtils.copyRasterToOutput(malstroem_outdir, 'filled.tif', self.getOutputFromName(self.OUTPUT_FILLED_RASTER))
+            #Write output to raster file
+            MalstroemUtils.writeRasterOutput(
+                malstroem_outdir,
+                'filled.tif',
+                self.getOutputValue(self.OUTPUT_FILLED_RASTER))
             
             #Under construction: convert to correct raster type based on extension of self.OUTPUT_xxx_RASTER 
 #            output = self.getOutputFromName(self.OUTPUT_FILLED_RASTER)
