@@ -37,11 +37,13 @@ from processing.core.parameters import ParameterBoolean
 from processing.core.parameters import ParameterNumber
 from processing.core.parameters import ParameterString
 from processing.core.parameters import ParameterRaster
+from processing.core.parameters import ParameterSelection
 from processing.core.outputs import OutputVector, OutputRaster
 
 from ..malstroem_utils import MalstroemUtils
 
 class Complete(GeoAlgorithm):
+    VECTOR_FORMAT = 'VECTOR_FORMAT'
     OUTPUT_EVENTS_LAYER = 'events'
     OUTPUT_NODES_LAYER = 'nodes'
     OUTPUT_POURPOINTS_LAYER = 'pourpoints'
@@ -67,6 +69,21 @@ class Complete(GeoAlgorithm):
         self.addParameter(ParameterRaster(self.INPUT_LAYER,
             self.tr('Input DEM (Raster)'), False, False))
 
+        self.addParameter(ParameterNumber(
+            self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 10))
+
+        self.addParameter(ParameterBoolean(self.ACCUMULATE,
+            self.tr("Calculate accumulated flow"), False))
+
+        self.addParameter(ParameterBoolean(self.VECTOR,
+            self.tr("Vectorize bluespots and watersheds"), False))
+        
+        self.addParameter(ParameterString(self.FILTER,
+            self.tr("Filter bluespots by area, maximum depth and volume. E.g.: 'area > 20.5 and (maxdepth > 0.05 or volume >  2.5)'"), False))
+        
+        self.addParameter(ParameterSelection(self.VECTOR_FORMAT,
+            self.tr('Vector destination Format'), MalstroemUtils.VECTOR_FORMATS))
+        
         self.addOutput(OutputVector(self.OUTPUT_EVENTS_LAYER,
             self.tr('Events')))
 
@@ -82,18 +99,6 @@ class Complete(GeoAlgorithm):
         self.addOutput(OutputRaster(self.OUTPUT_FILLED_RASTER,
             self.tr('Filled')))
 
-        self.addParameter(ParameterNumber(
-            self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 10))
-
-        self.addParameter(ParameterBoolean(self.ACCUMULATE,
-            self.tr("Calculate accumulated flow"), False))
-
-        self.addParameter(ParameterBoolean(self.VECTOR,
-            self.tr("Vectorize bluespots and watersheds"), False))
-        
-        self.addParameter(ParameterString(self.FILTER,
-            self.tr("Filter bluespots by area, maximum depth and volume. E.g.: 'area > 20.5 and (maxdepth > 0.05 or volume >  2.5)'"), False))
-        
     def processAlgorithm(self, progress):
         #Prepare call to malstroem
         #Example: complete -dem C:\Users\kpc\git\malstroem\tests\data\dtm.tif -r 10 -outdir c:\temp\kpc
@@ -113,22 +118,27 @@ class Complete(GeoAlgorithm):
             MalstroemUtils.writeVectorOutput(
                 malstroem_outdir,
                 'events.shp',
-                self.getOutputValue(self.OUTPUT_EVENTS_LAYER))
+                #self.getOutputValue(self.OUTPUT_EVENTS_LAYER),
+                self.getOutputFromName(self.OUTPUT_EVENTS_LAYER),
+                self.getParameterValue(self.VECTOR_FORMAT))
     
             MalstroemUtils.writeVectorOutput(
                 malstroem_outdir,
                 'streams.shp',
-                self.getOutputValue(self.OUTPUT_STREAMS_LAYER))
+                self.getOutputFromName(self.OUTPUT_STREAMS_LAYER),
+                self.getParameterValue(self.VECTOR_FORMAT))
     
             MalstroemUtils.writeVectorOutput(
                 malstroem_outdir,
                 'nodes.shp',
-                self.getOutputValue(self.OUTPUT_NODES_LAYER))
+                self.getOutputFromName(self.OUTPUT_NODES_LAYER),
+                self.getParameterValue(self.VECTOR_FORMAT))
     
             MalstroemUtils.writeVectorOutput(
                 malstroem_outdir,
                 'pourpoints.shp',
-                self.getOutputValue(self.OUTPUT_POURPOINTS_LAYER))
+                self.getOutputFromName(self.OUTPUT_POURPOINTS_LAYER),
+                self.getParameterValue(self.VECTOR_FORMAT))
 
             #Create raster files by copying malstroem output
             MalstroemUtils.copyRasterToOutput(malstroem_outdir, 'filled.tif', self.getOutputFromName(self.OUTPUT_FILLED_RASTER))

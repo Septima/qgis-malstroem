@@ -21,7 +21,56 @@ from processing.tools.raster import RasterWriter
 class MalstroemUtils:
     
     MALSTROEM_FOLDER = 'MALSTROEM_FOLDER'
-
+    VECTOR_FORMATS = [
+        'ESRI Shapefile',
+        'GeoJSON',
+        'GeoRSS',
+        'SQLite',
+        'GMT',
+        'MapInfo File',
+        'INTERLIS 1',
+        'INTERLIS 2',
+        'GML',
+        'Geoconcept',
+        'DXF',
+        'DGN',
+        'CSV',
+        'BNA',
+        'S57',
+        'KML',
+        'GPX',
+        'PGDump',
+        'GPSTrackMaker',
+        'ODS',
+        'XLSX',
+        'PDF',
+    ]
+    
+    VECTOR_EXTS = [
+        '.shp',
+        '.geojson',
+        '.xml',
+        '.sqlite',
+        '.gmt',
+        '.tab',
+        '.ili',
+        '.ili',
+        '.gml',
+        '.txt',
+        '.dxf',
+        '.dgn',
+        '.csv',
+        '.bna',
+        '.000',
+        '.kml',
+        '.gpx',
+        '.pgdump',
+        '.gtm',
+        '.ods',
+        '.xlsx',
+        '.pdf',
+    ]
+    
     @staticmethod
     def getSystemEncoding():
         settings = QSettings()
@@ -88,16 +137,25 @@ class MalstroemUtils:
     
                 
     @staticmethod
-    def writeVectorOutput(malstroem_outdir, input_filename, output_filename):
+    def writeVectorOutput(malstroem_outdir, input_filename, output, format_idx):
         vector_dir = os.path.join(malstroem_outdir, 'vector')
         input_dataobject = dataobjects.getObjectFromUri(os.path.join(vector_dir, input_filename))
         input_provider = input_dataobject.dataProvider()
+        
+        output_filename = output.value
+        out_format = VECTOR_FORMATS[format_idx]
+        ext = EXTS[format_idx]
+        if not output_filename.endswith(ext):
+            output_filename += ext
+            output.value = output_filename
+
         writer = QgsVectorFileWriter(
             output_filename,
             MalstroemUtils.getSystemEncoding(),
             input_provider.fields(),
             input_provider.geometryType(),
-            input_provider.crs())
+            input_provider.crs(),
+            driverName = out_format)
 
         for feature in vector.features(input_dataobject):
             writer.addFeature(feature)
