@@ -31,7 +31,6 @@ __revision__ = '$Format:%H$'
 
 import os
 
-from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.core.parameters import ParameterVector
 from processing.core.parameters import ParameterBoolean
 from processing.core.parameters import ParameterNumber
@@ -40,9 +39,10 @@ from processing.core.parameters import ParameterRaster
 from processing.core.parameters import ParameterSelection
 from processing.core.outputs import OutputVector, OutputRaster
 
+from malstroem_algorithm import MalstroemAlgorithm
 from ..malstroem_utils import MalstroemUtils
 
-class Complete(GeoAlgorithm):
+class Complete(MalstroemAlgorithm):
     VECTOR_FORMAT = 'VECTOR_FORMAT'
     OUTPUT_EVENTS_LAYER = 'events'
     OUTPUT_NODES_LAYER = 'nodes'
