@@ -144,12 +144,4 @@ class Complete(GeoAlgorithm):
             MalstroemUtils.writeRasterOutput(
                 malstroem_outdir,
                 'filled.tif',
-                self.getOutputValue(self.OUTPUT_FILLED_RASTER))
-            
-            #Under construction: convert to correct raster type based on extension of self.OUTPUT_xxx_RASTER 
-#            output = self.getOutputFromName(self.OUTPUT_FILLED_RASTER)
-#            MalstroemUtils.writeRasterOutput(
-#                malstroem_outdir,
-#                'filled.tif',
-#                output.getCompatibleFileName(self))
-
+                self.getOutputFromName(self.OUTPUT_FILLED_RASTER))

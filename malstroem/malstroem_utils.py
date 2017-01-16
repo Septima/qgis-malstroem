@@ -161,11 +161,15 @@ class MalstroemUtils:
             writer.addFeature(feature)
 
     @staticmethod
-    def writeRasterOutput(malstroem_out_dir, malstroem_out_filename, output_filename):
+    def writeRasterOutput(malstroem_out_dir, malstroem_out_filename, output):
+        output_filename = output.value
         if os.path.basename(output_filename) == malstroem_out_filename:
             #if file names are equal just copy
             MalstroemUtils.copyRasterToOutput(malstroem_out_dir, malstroem_out_filename, output_filename)
         else:
+            if not output_filename.endswith('.tif'):
+                output_filename += '.tif'
+                output.value = output_filename
             #Convert
             malstroem_out_raster_dir = malstroem_out_dir
             FileName = os.path.join(malstroem_out_raster_dir, malstroem_out_filename)
@@ -185,8 +189,7 @@ class MalstroemUtils:
             NDV, xsize, ysize, GeoT, Projection, DataType = MalstroemUtils.GetRasterInfo(FileName)
             
             # Set up the correct output driver
-            driver_name = GdalUtils.getFormatShortNameFromFilename(output_filename)
-            driver = gdal.GetDriverByName(driver_name)
+            driver = gdal.GetDriverByName('GTiff')
             
             MalstroemUtils.CreateRasterFile(output_filename, Array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
 
