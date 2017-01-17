@@ -32,6 +32,7 @@ __revision__ = '$Format:%H$'
 from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 from .algorithms.complete import Complete
+from .algorithms.complete_vector import CompleteVector
 from malstroem_utils import MalstroemUtils
 
 class malstroemAlgorithmProvider(AlgorithmProvider):
@@ -43,7 +44,7 @@ class malstroemAlgorithmProvider(AlgorithmProvider):
         self.activate = False
 
         # Load algorithms
-        self.alglist = [Complete()]
+        self.alglist = [Complete(), CompleteVector()]
         for alg in self.alglist:
             alg.provider = self
 

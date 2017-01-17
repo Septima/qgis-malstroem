@@ -51,39 +51,41 @@ class Complete(MalstroemAlgorithm):
     OUTPUT_DEPTHS_RASTER = 'depths'
     OUTPUT_FILLED_RASTER = 'filled'
     OUTPUT_FLOWDIR_RASTER = 'flowdir'
-    OUTPUT_LABELLED_RASTER = 'labelled'
+    OUTPUT_LABELED_RASTER = 'labeled'
     OUTPUT_WATERSHEDS_RASTER = 'watersheds'
+    OUTPUT_ACCUMULATED_RASTER = 'accum'
     INPUT_LAYER = 'INPUT_LAYER'
     RAIN_MM = 'RAIN_MM'
-    ACCUMULATE = 'ACCUMULATE'
-    VECTOR = 'VECTOR'
     FILTER = 'FILTER'
+    
+    def __init__(self):
+        MalstroemAlgorithm.__init__(self)
 
     def defineCharacteristics(self):
         # The name that the user will see in the toolbox
-        self.name = self.tr('Complete (Perform all steps in one complete analysis)')
+        self.name = self.tr('Complete')
 
         # The branch of the toolbox under which the algorithm will appear
-        self.group = self.tr('Short cut')
+        self.group = self.tr('Short cuts (Perform all steps in one complete analysis)')
 
+        self.addParameters()
+
+        self.addOutputs()
+
+    def addParameters(self):
         self.addParameter(ParameterRaster(self.INPUT_LAYER,
             self.tr('Input DEM (Raster)'), False, False))
 
         self.addParameter(ParameterNumber(
             self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 10))
 
-        self.addParameter(ParameterBoolean(self.ACCUMULATE,
-            self.tr("Calculate accumulated flow"), False))
-
-        self.addParameter(ParameterBoolean(self.VECTOR,
-            self.tr("Vectorize bluespots and watersheds"), False))
-        
         self.addParameter(ParameterString(self.FILTER,
             self.tr("Filter bluespots by area, maximum depth and volume. E.g.: 'area > 20.5 and (maxdepth > 0.05 or volume >  2.5)'"), False))
         
         self.addParameter(ParameterSelection(self.VECTOR_FORMAT,
             self.tr('Vector destination Format'), MalstroemUtils.VECTOR_FORMATS))
-        
+
+    def addOutputs(self):
         self.addOutput(OutputVector(self.OUTPUT_EVENTS_LAYER,
             self.tr('Events')))
 
@@ -96,52 +98,89 @@ class Complete(MalstroemAlgorithm):
         self.addOutput(OutputVector(self.OUTPUT_STREAMS_LAYER,
             self.tr('Streams')))
 
+        self.addOutput(OutputRaster(self.OUTPUT_DEPTHS_RASTER,
+            self.tr('Depths')))
+
         self.addOutput(OutputRaster(self.OUTPUT_FILLED_RASTER,
             self.tr('Filled')))
 
+        self.addOutput(OutputRaster(self.OUTPUT_FLOWDIR_RASTER,
+            self.tr('Flowdir')))
+
+        self.addOutput(OutputRaster(self.OUTPUT_LABELED_RASTER,
+            self.tr('Labeled')))
+
+        self.addOutput(OutputRaster(self.OUTPUT_WATERSHEDS_RASTER,
+            self.tr('watersheds')))
+
+        self.addOutput(OutputRaster(self.OUTPUT_ACCUMULATED_RASTER,
+            self.tr('accum')))
+
     def processAlgorithm(self, progress):
-        #Prepare call to malstroem
-        #Example: complete -dem C:\Users\kpc\git\malstroem\tests\data\dtm.tif -r 10 -outdir c:\temp\kpc
-        command = 'complete'
+        command_args = self.getCommand_args()
+        success = MalstroemUtils.runMalstroemCommand('complete', command_args, progress)
+        if success:
+            self.createOutput()
+
+    def getCommand_args(self):
+        #Example: complete -dem C:\Users\kpc\git\malstroem\tests\data\dtm.tif -r 10 -outdir c:\temp\kpc -accum
         command_args = []
         inputFilename = self.getParameterValue(self.INPUT_LAYER)
         command_args.extend(['-dem', inputFilename])
         rainMM = self.getParameterValue(self.RAIN_MM)
         command_args.extend(['-r', str(rainMM)])
-        malstroem_outdir = MalstroemUtils.getOutputDir()
-        command_args.extend(['-outdir', malstroem_outdir])
-        success = MalstroemUtils.runMalstroemCommand(command, command_args, progress)
-        if success:
-            #Create processing output from malstroem output
-            
-            #Create vector files
-            MalstroemUtils.writeVectorOutput(
-                malstroem_outdir,
-                'events.shp',
-                #self.getOutputValue(self.OUTPUT_EVENTS_LAYER),
-                self.getOutputFromName(self.OUTPUT_EVENTS_LAYER),
-                self.getParameterValue(self.VECTOR_FORMAT))
+        command_args.extend(['-outdir', self.malstroem_outdir])
+        command_args.append('-accum')
+        filter = self.getParameterValue(self.FILTER)
+        if filter != '':
+            command_args.extend(['-filter', filter])
+        return command_args
     
-            MalstroemUtils.writeVectorOutput(
-                malstroem_outdir,
-                'streams.shp',
-                self.getOutputFromName(self.OUTPUT_STREAMS_LAYER),
-                self.getParameterValue(self.VECTOR_FORMAT))
-    
-            MalstroemUtils.writeVectorOutput(
-                malstroem_outdir,
-                'nodes.shp',
-                self.getOutputFromName(self.OUTPUT_NODES_LAYER),
-                self.getParameterValue(self.VECTOR_FORMAT))
-    
-            MalstroemUtils.writeVectorOutput(
-                malstroem_outdir,
-                'pourpoints.shp',
-                self.getOutputFromName(self.OUTPUT_POURPOINTS_LAYER),
-                self.getParameterValue(self.VECTOR_FORMAT))
+    def createOutput(self):
+         #Create processing output from malstroem complete
+        
+        #Create vector files
+        self.writeVectorOutput(
+            'events.shp',
+            self.getOutputFromName(self.OUTPUT_EVENTS_LAYER),
+            self.getParameterValue(self.VECTOR_FORMAT))
 
-            #Write output to raster file
-            MalstroemUtils.writeRasterOutput(
-                malstroem_outdir,
-                'filled.tif',
-                self.getOutputFromName(self.OUTPUT_FILLED_RASTER))
+        self.writeVectorOutput(
+            'streams.shp',
+            self.getOutputFromName(self.OUTPUT_STREAMS_LAYER),
+            self.getParameterValue(self.VECTOR_FORMAT))
+
+        self.writeVectorOutput(
+            'nodes.shp',
+            self.getOutputFromName(self.OUTPUT_NODES_LAYER),
+            self.getParameterValue(self.VECTOR_FORMAT))
+
+        self.writeVectorOutput(
+            'pourpoints.shp',
+            self.getOutputFromName(self.OUTPUT_POURPOINTS_LAYER),
+            self.getParameterValue(self.VECTOR_FORMAT))
+
+        #Write output to raster file
+        self.writeRasterOutput(
+            'filled.tif',
+            self.getOutputFromName(self.OUTPUT_FILLED_RASTER))
+        
+        self.writeRasterOutput(
+            'depths.tif',
+            self.getOutputFromName(self.OUTPUT_DEPTHS_RASTER))
+        
+        self.writeRasterOutput(
+            'flowdir.tif',
+            self.getOutputFromName(self.OUTPUT_FLOWDIR_RASTER))
+        
+        self.writeRasterOutput(
+            'labeled.tif',
+            self.getOutputFromName(self.OUTPUT_LABELED_RASTER))
+
+        self.writeRasterOutput(
+            'watersheds.tif',
+            self.getOutputFromName(self.OUTPUT_WATERSHEDS_RASTER))
+
+        self.writeRasterOutput(
+            'accum.tif',
+            self.getOutputFromName(self.OUTPUT_ACCUMULATED_RASTER))
