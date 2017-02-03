@@ -73,8 +73,8 @@ class MalstroemAlgorithm(GeoAlgorithm):
             MalstroemUtils.CreateRasterFile(output_filename, Array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
 
     def checkBeforeOpeningParametersDialog(self):
-        if MalstroemUtils.MalstroemExePath() == '':
-            return self.tr('Please set Menu->Processing->Options->Providers->Malstroem->Malstroem folder')
+        if MalstroemUtils.MalstroemScript() == '':
+            return self.tr('Please set Menu->Processing->Options->Providers->Malstroem->Malstroem script')
         else:
             return None
         

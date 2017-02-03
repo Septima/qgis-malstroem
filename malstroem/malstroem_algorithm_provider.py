@@ -58,8 +58,8 @@ class malstroemAlgorithmProvider(AlgorithmProvider):
         """
         AlgorithmProvider.initializeSettings(self)
         ProcessingConfig.addSetting(Setting(self.getDescription(),
-            MalstroemUtils.MALSTROEM_FOLDER,
-            'Malstroem folder', '', valuetype=Setting.FOLDER))
+            MalstroemUtils.MALSTROEM_SCRIPT,
+            'Malstroem script', '', valuetype=Setting.FILE))
 
     def unload(self):
         """Setting should be removed here, so they do not appear anymore

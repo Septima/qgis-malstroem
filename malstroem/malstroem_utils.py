@@ -21,7 +21,7 @@ from processing.algs.gdal.GdalUtils import GdalUtils
 
 class MalstroemUtils:
     
-    MALSTROEM_FOLDER = 'MALSTROEM_FOLDER'
+    MALSTROEM_SCRIPT = 'MALSTROEM_SCRIPT'
     VECTOR_FORMATS = [
         'ESRI Shapefile',
         'GeoJSON',
@@ -79,7 +79,8 @@ class MalstroemUtils:
 
     @staticmethod
     def runMalstroemCommand(command, command_args, progress):
-        popen_commands = [os.path.join(MalstroemUtils.MalstroemExePath(), 'malstroem.exe')]
+        popen_commands = [os.path.join(MalstroemUtils.MalstroemScriptPath(), 'malstroem.exe')]
+        popen_commands = [MalstroemUtils.MalstroemScript()]
         popen_commands.append(command)
         popen_commands.extend(command_args)
         loglines = ['Malstroem execution console output']
@@ -94,7 +95,7 @@ class MalstroemUtils:
             stdin=open(os.devnull),
             stderr=subprocess.STDOUT,
             universal_newlines=False,
-            cwd = MalstroemUtils.MalstroemExePath(),
+            cwd = MalstroemUtils.MalstroemScriptPath(),
             env= {'SystemRoot': 'C:\\Windows'}
         )
         returncode = proc.wait()
@@ -126,11 +127,16 @@ class MalstroemUtils:
         return unicode(os.path.abspath(outputDir))
     
     @staticmethod
-    def MalstroemExePath():
-        folder = ProcessingConfig.getSetting(MalstroemUtils.MALSTROEM_FOLDER)
-        if folder is None:
-            folder = ''
-        return folder
+    def MalstroemScript():
+        script = ProcessingConfig.getSetting(MalstroemUtils.MALSTROEM_SCRIPT)
+        if script is None:
+            script = ''
+        return script
+    
+    @staticmethod
+    def MalstroemScriptPath():
+        path = os.path.dirname(os.path.abspath(MalstroemUtils.MalstroemScript()))
+        return path
     
     @staticmethod
     def copyRasterToOutput(malstroem_out_dir, malstroem_out_filename, output_filename):
