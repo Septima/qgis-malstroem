@@ -118,6 +118,7 @@ class Complete(MalstroemAlgorithm):
             self.tr('accum')))
 
     def processAlgorithm(self, progress):
+        self.malstroem_outdir = MalstroemUtils.getOutputDir()
         command_args = self.getCommand_args()
         success = MalstroemUtils.runMalstroemCommand('complete', command_args, progress)
         if success:
@@ -134,7 +135,7 @@ class Complete(MalstroemAlgorithm):
         command_args.append('-accum')
         filter = self.getParameterValue(self.FILTER)
         if filter != '':
-            command_args.extend(['-filter', '"' + filter + '"'])
+            command_args.extend(['-filter', filter])
         return command_args
     
     def createOutput(self):
