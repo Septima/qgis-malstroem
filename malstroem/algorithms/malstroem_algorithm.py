@@ -42,12 +42,12 @@ class MalstroemAlgorithm(GeoAlgorithm):
 
     def writeRasterOutput(self, malstroem_out_filename, output):
         output_filename = output.value
+        if not output_filename.endswith('.tif'):
+            output_filename += '.tif'
+            output.value = output_filename
         if output_filename == malstroem_out_filename:
             return
         else:
-            if not output_filename.endswith('.tif'):
-                output_filename += '.tif'
-                output.value = output_filename
             MalstroemUtils.copyRasterToOutput(self.malstroem_outdir, malstroem_out_filename, output_filename)
 
 
