@@ -90,7 +90,6 @@ class MalstroemUtils:
 
         proc = subprocess.Popen(
             popen_commands,
-            shell=True,
             stdout=subprocess.PIPE,
             stdin=open(os.devnull),
             stderr=subprocess.STDOUT,

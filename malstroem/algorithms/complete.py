@@ -134,7 +134,7 @@ class Complete(MalstroemAlgorithm):
         command_args.append('-accum')
         filter = self.getParameterValue(self.FILTER)
         if filter != '':
-            command_args.extend(['-filter', '"' + filter + '"'])
+            command_args.extend(['-filter', filter])
         return command_args
     
     def createOutput(self):
