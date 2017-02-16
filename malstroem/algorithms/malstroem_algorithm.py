@@ -42,35 +42,14 @@ class MalstroemAlgorithm(GeoAlgorithm):
 
     def writeRasterOutput(self, malstroem_out_filename, output):
         output_filename = output.value
-        if os.path.basename(output_filename) == malstroem_out_filename:
-            #if file names are equal just copy
-            MalstroemUtils.copyRasterToOutput(self.malstroem_outdir, malstroem_out_filename, output_filename)
+        if output_filename == malstroem_out_filename:
+            return
         else:
             if not output_filename.endswith('.tif'):
                 output_filename += '.tif'
                 output.value = output_filename
-            #Convert
-            malstroem_out_raster_dir = self.malstroem_outdir
-            FileName = os.path.join(malstroem_out_raster_dir, malstroem_out_filename)
-            DataSet = gdal.Open(FileName, GA_ReadOnly)
-            # Get the first (and only) band.
-            Band = DataSet.GetRasterBand(1)
-            # Open as an array.
-            Array = Band.ReadAsArray()
-            # Get the No Data Value
-            NDV = Band.GetNoDataValue()
-            # Convert No Data Points to nans
-            Array[Array == NDV] = np.nan
-            
-            # Now I'm ready to save the new file, in the meantime I have 
-            # closed the original, so I reopen it to get the projection
-            # information...
-            NDV, xsize, ysize, GeoT, Projection, DataType = MalstroemUtils.GetRasterInfo(FileName)
-            
-            # Set up the correct output driver
-            driver = gdal.GetDriverByName('GTiff')
-            
-            MalstroemUtils.CreateRasterFile(output_filename, Array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
+            MalstroemUtils.copyRasterToOutput(self.malstroem_outdir, malstroem_out_filename, output_filename)
+
 
     def checkBeforeOpeningParametersDialog(self):
         if MalstroemUtils.MalstroemScript() == '':
