@@ -80,7 +80,8 @@ class Complete(MalstroemAlgorithm):
             self.RAIN_MM, self.tr("Rain incident in mm  (required)"), 0, None, 10))
 
         self.addParameter(ParameterString(self.FILTER,
-            self.tr("Filter bluespots by area, maximum depth and volume. E.g.: area > 20.5 and (maxdepth > 0.05 or volume >  2.5)"), False))
+            self.tr("Filter bluespots by area, maximum depth and volume. E.g.: area > 20.5 and (maxdepth > 0.05 or volume >  2.5)"),
+            default='', optional=True))
         
         self.addParameter(ParameterSelection(self.VECTOR_FORMAT,
             self.tr('Vector destination Format'), MalstroemUtils.VECTOR_FORMATS))
