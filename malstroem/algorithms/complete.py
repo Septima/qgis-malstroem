@@ -99,7 +99,7 @@ class Complete(MalstroemAlgorithm):
             self.tr('Streams')))
 
         self.addOutput(OutputRaster(self.OUTPUT_DEPTHS_RASTER,
-            self.tr('Depths')))
+            self.tr('BluespotDepths')))
 
         self.addOutput(OutputRaster(self.OUTPUT_FILLED_RASTER,
             self.tr('Filled')))
@@ -108,7 +108,7 @@ class Complete(MalstroemAlgorithm):
             self.tr('Flowdir')))
 
         self.addOutput(OutputRaster(self.OUTPUT_LABELED_RASTER,
-            self.tr('Labeled')))
+            self.tr('Bluespots')))
 
         self.addOutput(OutputRaster(self.OUTPUT_WATERSHEDS_RASTER,
             self.tr('watersheds')))
@@ -166,7 +166,7 @@ class Complete(MalstroemAlgorithm):
             self.getOutputFromName(self.OUTPUT_FILLED_RASTER))
         
         self.writeRasterOutput(
-            'depths.tif',
+            'bs_depths.tif',
             self.getOutputFromName(self.OUTPUT_DEPTHS_RASTER))
         
         self.writeRasterOutput(
@@ -174,7 +174,7 @@ class Complete(MalstroemAlgorithm):
             self.getOutputFromName(self.OUTPUT_FLOWDIR_RASTER))
         
         self.writeRasterOutput(
-            'labeled.tif',
+            'bluespots.tif',
             self.getOutputFromName(self.OUTPUT_LABELED_RASTER))
 
         self.writeRasterOutput(
