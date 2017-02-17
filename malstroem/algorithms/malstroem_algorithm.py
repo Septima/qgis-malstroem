@@ -15,8 +15,10 @@ class MalstroemAlgorithm(GeoAlgorithm):
 
     def __init__(self):
         GeoAlgorithm.__init__(self)
+
+    def processAlgorithm(self, progress):
         self.malstroem_outdir = MalstroemUtils.getOutputDir()
-        
+
     def writeVectorOutput(self, input_filename, output, format_idx):
         vector_dir = os.path.join(self.malstroem_outdir, 'vector')
         input_dataobject = dataobjects.getObjectFromUri(os.path.join(vector_dir, input_filename))
