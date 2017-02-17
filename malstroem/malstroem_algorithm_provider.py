@@ -33,6 +33,16 @@ from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 from .algorithms.complete import Complete
 from .algorithms.complete_vector import CompleteVector
+from .algorithms.flowdir import Flowdir
+from .algorithms.accum import Accum
+from .algorithms.filled import Filled
+from .algorithms.depths import Depths
+from .algorithms.bspots import BSpots
+from .algorithms.wsheds import Wsheds
+from .algorithms.pourpts import Pourpts
+from .algorithms.network import Network
+from .algorithms.rain import Rain
+
 from malstroem_utils import MalstroemUtils
 
 class malstroemAlgorithmProvider(AlgorithmProvider):
@@ -44,7 +54,9 @@ class malstroemAlgorithmProvider(AlgorithmProvider):
         self.activate = False
 
         # Load algorithms
-        self.alglist = [Complete(), CompleteVector()]
+        self.alglist = [Complete(), CompleteVector(), Flowdir(), Accum(),
+                        Filled(), Depths(), BSpots(), Wsheds(), Pourpts(),
+                        Network(), Rain()]
         for alg in self.alglist:
             alg.provider = self
 
