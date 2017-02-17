@@ -4,6 +4,7 @@ from complete import Complete
 
 from processing.core.outputs import OutputVector
 
+from malstroem_algorithm import MalstroemAlgorithm
 from ..malstroem_utils import MalstroemUtils
 
 class CompleteVector(Complete):
@@ -33,7 +34,7 @@ class CompleteVector(Complete):
             self.tr('bluespots_vector')))
 
     def processAlgorithm(self, progress):
-        self.malstroem_outdir = MalstroemUtils.getOutputDir()
+        MalstroemAlgorithm.processAlgorithm(self, progress)
         command_args = self.getCommand_args()
         command_args.append('-vector')
         success = MalstroemUtils.runMalstroemCommand('complete', command_args, progress)
