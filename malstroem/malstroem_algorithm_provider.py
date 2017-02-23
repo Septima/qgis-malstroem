@@ -28,12 +28,26 @@ __copyright__ = '(C) 2017 by Septima'
 # This will get replaced with a git SHA1 when you do a git archive
 
 __revision__ = '$Format:%H$'
-
+import os
+import glob
 from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
+from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
 from .algorithms.complete import Complete
 from .algorithms.complete_vector import CompleteVector
+from .algorithms.flowdir import Flowdir
+from .algorithms.accum import Accum
+from .algorithms.filled import Filled
+from .algorithms.depths import Depths
+from .algorithms.bspots import BSpots
+from .algorithms.wsheds import Wsheds
+from .algorithms.pourpts import Pourpts
+from .algorithms.network import Network
+from .algorithms.rain import Rain
+
 from malstroem_utils import MalstroemUtils
+
+pluginPath = os.path.split(os.path.realpath(__file__))[0]
 
 class malstroemAlgorithmProvider(AlgorithmProvider):
 
@@ -44,7 +58,14 @@ class malstroemAlgorithmProvider(AlgorithmProvider):
         self.activate = False
 
         # Load algorithms
-        self.alglist = [Complete(), CompleteVector()]
+        self.alglist = [Complete(), CompleteVector(), Flowdir(), Accum(),
+                        Filled(), Depths(), BSpots(), Wsheds(), Pourpts(),
+                        Network(), Rain()]
+
+        # Note: Models are loaded dynamically below
+        self.models = []
+        self.modeldir = os.path.join(pluginPath, 'models/')
+
         for alg in self.alglist:
             alg.provider = self
 
@@ -67,7 +88,7 @@ class malstroemAlgorithmProvider(AlgorithmProvider):
         """
         AlgorithmProvider.unload(self)
         ProcessingConfig.removeSetting(
-            malstroemPluginProvider.MY_DUMMY_SETTING)
+            MalstroemUtils.MALSTROEM_SCRIPT)
 
     def getName(self):
         """This is the name that will appear on the toolbox group.
@@ -99,4 +120,18 @@ class malstroemAlgorithmProvider(AlgorithmProvider):
         even if the list does not change, since the self.algs list is
         cleared before calling this method.
         """
-        self.algs = self.alglist
+        self._loadModels()
+        self.algs = self.alglist + self.models
+
+    def _loadModels(self):
+        """Load models from the 'models' sub directory
+
+        :return: List of ModelerAlgorithm
+        """
+
+        self.models = []
+
+        for f in glob.glob(os.path.join(self.modeldir, '*.model')):
+            m = ModelerAlgorithm.fromFile(f)
+            m.provider = self
+            self.models.append(m)
