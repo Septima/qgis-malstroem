@@ -79,7 +79,7 @@ class malstroemAlgorithmProvider(AlgorithmProvider):
         """
         AlgorithmProvider.unload(self)
         ProcessingConfig.removeSetting(
-            malstroemPluginProvider.MY_DUMMY_SETTING)
+            MalstroemUtils.MALSTROEM_SCRIPT)
 
     def getName(self):
         """This is the name that will appear on the toolbox group.
