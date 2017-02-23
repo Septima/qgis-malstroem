@@ -1,0 +1,348 @@
+{
+    "values": {
+        "inputs": {
+            "rainincidentmm": {
+                "values": {
+                    "pos": {
+                        "values": {
+                            "y": 60.0, 
+                            "x": 560.0
+                        }, 
+                        "class": "point"
+                    }, 
+                    "param": {
+                        "values": {
+                            "isAdvanced": false, 
+                            "name": "rainincidentmm", 
+                            "min": 1, 
+                            "default": 10, 
+                            "max": 9999, 
+                            "value": null, 
+                            "hidden": false, 
+                            "isInteger": true, 
+                            "optional": false, 
+                            "description": "Rain incident [mm]"
+                        }, 
+                        "class": "processing.core.parameters.ParameterNumber"
+                    }
+                }, 
+                "class": "processing.modeler.ModelerAlgorithm.ModelerParameter"
+            }, 
+            "bluespotfilter": {
+                "values": {
+                    "pos": {
+                        "values": {
+                            "y": 60.0, 
+                            "x": 340.0
+                        }, 
+                        "class": "point"
+                    }, 
+                    "param": {
+                        "values": {
+                            "isAdvanced": false, 
+                            "name": "bluespotfilter", 
+                            "default": "", 
+                            "value": null, 
+                            "multiline": false, 
+                            "hidden": false, 
+                            "optional": false, 
+                            "description": "Bluespot filter"
+                        }, 
+                        "class": "processing.core.parameters.ParameterString"
+                    }
+                }, 
+                "class": "processing.modeler.ModelerAlgorithm.ModelerParameter"
+            }, 
+            "dem": {
+                "values": {
+                    "pos": {
+                        "values": {
+                            "y": 60.0, 
+                            "x": 120.0
+                        }, 
+                        "class": "point"
+                    }, 
+                    "param": {
+                        "values": {
+                            "isAdvanced": false, 
+                            "name": "dem", 
+                            "showSublayersDialog": true, 
+                            "value": null, 
+                            "exported": null, 
+                            "hidden": false, 
+                            "optional": false, 
+                            "description": "DEM"
+                        }, 
+                        "class": "processing.core.parameters.ParameterRaster"
+                    }
+                }, 
+                "class": "processing.modeler.ModelerAlgorithm.ModelerParameter"
+            }
+        }, 
+        "helpContent": {}, 
+        "group": "Models", 
+        "name": "Complete with vectorization", 
+        "algs": {
+            "GDALOGRPOLYGONIZE_1": {
+                "values": {
+                    "name": "GDALOGRPOLYGONIZE_1", 
+                    "paramsFolded": true, 
+                    "outputs": {
+                        "OUTPUT": {
+                            "values": {
+                                "description": "Bluespots", 
+                                "pos": {
+                                    "values": {
+                                        "y": 665.0, 
+                                        "x": 131.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }
+                    }, 
+                    "outputsFolded": true, 
+                    "pos": {
+                        "values": {
+                            "y": 539.0, 
+                            "x": 131.0
+                        }, 
+                        "class": "point"
+                    }, 
+                    "dependencies": [], 
+                    "params": {
+                        "INPUT": {
+                            "values": {
+                                "alg": "MODELERCOMPLETE_1", 
+                                "output": "bluespots_ALGPROVIDERNAMELABELBLUESPOTS_1"
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ValueFromOutput"
+                        }, 
+                        "FIELD": "bspot_id"
+                    }, 
+                    "active": true, 
+                    "consoleName": "gdalogr:polygonize", 
+                    "description": "Polygonize (raster to vector)"
+                }, 
+                "class": "processing.modeler.ModelerAlgorithm.Algorithm"
+            }, 
+            "GDALOGRPOLYGONIZE_2": {
+                "values": {
+                    "name": "GDALOGRPOLYGONIZE_2", 
+                    "paramsFolded": true, 
+                    "outputs": {
+                        "OUTPUT": {
+                            "values": {
+                                "description": "Watersheds", 
+                                "pos": {
+                                    "values": {
+                                        "y": 694.0, 
+                                        "x": 441.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }
+                    }, 
+                    "outputsFolded": true, 
+                    "pos": {
+                        "values": {
+                            "y": 608.0, 
+                            "x": 363.0
+                        }, 
+                        "class": "point"
+                    }, 
+                    "dependencies": [], 
+                    "params": {
+                        "INPUT": {
+                            "values": {
+                                "alg": "MODELERCOMPLETE_1", 
+                                "output": "watersheds_ALGPROVIDERNAMECALCULATEBLUESPOTWATERSHEDS_1"
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ValueFromOutput"
+                        }, 
+                        "FIELD": "bspot_id"
+                    }, 
+                    "active": true, 
+                    "consoleName": "gdalogr:polygonize", 
+                    "description": "Polygonize (raster to vector)"
+                }, 
+                "class": "processing.modeler.ModelerAlgorithm.Algorithm"
+            }, 
+            "MODELERCOMPLETE_1": {
+                "values": {
+                    "name": "MODELERCOMPLETE_1", 
+                    "paramsFolded": true, 
+                    "outputs": {
+                        "pourpoints_ALGPROVIDERNAMEDETERMINEPOURPOINTS_1": {
+                            "values": {
+                                "description": "Pourpoints", 
+                                "pos": {
+                                    "values": {
+                                        "y": 205.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "events_ALGPROVIDERNAMECALCULATEBLUESPOTFILLANDSPILLVOLUMESFORSPECIFICRAINEVENT_1": {
+                            "values": {
+                                "description": "Events", 
+                                "pos": {
+                                    "values": {
+                                        "y": 235.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "depths_ALGPROVIDERNAMECALCULATEBLUESPOTDEPTHS_1": {
+                            "values": {
+                                "description": "BluespotDepths", 
+                                "pos": {
+                                    "values": {
+                                        "y": 265.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "accum_ALGPROVIDERNAMECALCULATEACCUMULATEDFLOW_1": {
+                            "values": {
+                                "description": "AccumulatedFlow", 
+                                "pos": {
+                                    "values": {
+                                        "y": 295.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "filled_ALGPROVIDERNAMECREATEAFILLEDDEPRESSIONLESSDEM_1": {
+                            "values": {
+                                "description": "Filled", 
+                                "pos": {
+                                    "values": {
+                                        "y": 325.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "flowdir_ALGPROVIDERNAMECALCULATESURFACEWATERFLOWDIRECTIONS_1": {
+                            "values": {
+                                "description": "Flowdir", 
+                                "pos": {
+                                    "values": {
+                                        "y": 355.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "nodes_ALGPROVIDERNAMECALCULATESTREAMNETWORKBETWEENBLUESPOTS_1": {
+                            "values": {
+                                "description": "Nodes", 
+                                "pos": {
+                                    "values": {
+                                        "y": 385.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "streams_ALGPROVIDERNAMECALCULATESTREAMNETWORKBETWEENBLUESPOTS_1": {
+                            "values": {
+                                "description": "Streams", 
+                                "pos": {
+                                    "values": {
+                                        "y": 415.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "watersheds_ALGPROVIDERNAMECALCULATEBLUESPOTWATERSHEDS_1": {
+                            "values": {
+                                "description": "Watersheds", 
+                                "pos": {
+                                    "values": {
+                                        "y": 445.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }, 
+                        "bluespots_ALGPROVIDERNAMELABELBLUESPOTS_1": {
+                            "values": {
+                                "description": "Bluespots", 
+                                "pos": {
+                                    "values": {
+                                        "y": 475.0, 
+                                        "x": 320.0
+                                    }, 
+                                    "class": "point"
+                                }
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
+                        }
+                    }, 
+                    "outputsFolded": true, 
+                    "pos": {
+                        "values": {
+                            "y": 160.0, 
+                            "x": 120.0
+                        }, 
+                        "class": "point"
+                    }, 
+                    "dependencies": [], 
+                    "params": {
+                        "bluespotfilter": {
+                            "values": {
+                                "name": "bluespotfilter"
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ValueFromInput"
+                        }, 
+                        "dem": {
+                            "values": {
+                                "name": "dem"
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ValueFromInput"
+                        }, 
+                        "rainfallmm": {
+                            "values": {
+                                "name": "rainincidentmm"
+                            }, 
+                            "class": "processing.modeler.ModelerAlgorithm.ValueFromInput"
+                        }
+                    }, 
+                    "active": true, 
+                    "consoleName": "modeler:complete", 
+                    "description": "Malstroem complete model"
+                }, 
+                "class": "processing.modeler.ModelerAlgorithm.Algorithm"
+            }
+        }
+    }, 
+    "class": "processing.modeler.ModelerAlgorithm.ModelerAlgorithm"
+}
