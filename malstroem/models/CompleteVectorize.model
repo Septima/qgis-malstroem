@@ -214,20 +214,7 @@
                                 }
                             }, 
                             "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
-                        }, 
-                        "accum_ALGPROVIDERNAMECALCULATEACCUMULATEDFLOW_1": {
-                            "values": {
-                                "description": "AccumulatedFlow", 
-                                "pos": {
-                                    "values": {
-                                        "y": 295.0, 
-                                        "x": 320.0
-                                    }, 
-                                    "class": "point"
-                                }
-                            }, 
-                            "class": "processing.modeler.ModelerAlgorithm.ModelerOutput"
-                        }, 
+                        },
                         "filled_ALGPROVIDERNAMECREATEAFILLEDDEPRESSIONLESSDEM_1": {
                             "values": {
                                 "description": "Filled", 
