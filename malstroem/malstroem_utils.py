@@ -89,8 +89,16 @@ class MalstroemUtils:
         shell = False
         env = {}
         if system.isWindows():
+            # Some os env variables are required to run python o windows
+            # SystemRoot is required for python
+            # NUMBER_OF_CPUS is required for scipy
             shell = True
-            env = {'SystemRoot': 'C:\\Windows'}
+            qgisenv = dict(os.environ)
+            # Remove PYTHONHOME as the malstroem exe MAY not be using the same python environment as QGIS 
+            if qgisenv.has_key('PYTHONHOME'): 
+                qgisenv.pop('PYTHONHOME')
+            env = qgisenv
+
 
         proc = subprocess.Popen(
             popen_commands,
