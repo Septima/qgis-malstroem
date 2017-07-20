@@ -22,4 +22,4 @@ You may have to check the box next the plugin to activate the plugin.
 
 Now open the _Processing Options_ dialog (Processing -> Options). Now, under _Providers_ you should see a _Malstroem_ 
 entry (if not, check that all the above steps have been carried out). Make sure _Activate_ is checked. In 
-_Malstroem script_ you put the path to the malstroem executable (i.e. 'C:\Python27\scripts\malstroem.exe').
+_Malstroem script_ you put the path to the malstroem executable (i.e. `C:\Python27\scripts\malstroem.exe`).
