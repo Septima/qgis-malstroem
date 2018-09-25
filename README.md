@@ -1,11 +1,14 @@
 qgis-malstroem
 ==============
 **qgis-malstroem** is a QGIS plugin which adds a number of hydrology algorithms based on 
-[malstroem](https://github.com/Kortforsyningen/malstroem) to the QGIS Processing toolbox.
+[malstroem](https://github.com/Septima/malstroem) to the QGIS Processing toolbox.
+
+### Note:
+This is a fork of the original [qgis-malstroem repository](https://github.com/Kortforsyningen/qgis-malstroem). It seems like the original malstroem repo is not maintained anymore. This repo is intended to be a maintained version of malstroem.
 
 Installation
 ------------
-First [install malstroem](https://github.com/Kortforsyningen/malstroem/blob/master/README.md#installation). It can be 
+First [install malstroem](https://github.com/Septima/malstroem/blob/master/README.md#installation). It can be 
 installed into any python interpreter on your system. Specifically, you don't have to install it into the python 
 interpreter used by QGIS.
 
